@@ -1,0 +1,86 @@
+DROP DATABASE IF EXISTS FEI;
+CREATE DATABASE FEI;
+USE fei;
+CREATE TABLE alumno (
+    matricula VARCHAR(10) PRIMARY KEY,
+    nombre VARCHAR(30) NOT NULL,
+    apaterno VARCHAR(30) NOT NULL,
+    amaterno VARCHAR(30) NOT NULL,
+    email VARCHAR(60) NOT NULL,
+    fecha_nac DATE,
+    edad INT
+    );
+CREATE TABLE grado_estudios (
+    id_grado INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(18) NOT NULL
+    );
+CREATE TABLE profesor (
+    num_personal INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id_grado INT UNSIGNED NOT NULL,
+    nombre VARCHAR(30) NOT NULL,
+    apaterno VARCHAR(30) NOT NULL,
+    amaterno VARCHAR(30) NOT NULL,
+    email VARCHAR(30) NOT NULL,
+    CONSTRAINT fk_grado_estudios FOREIGN KEY (id_grado)
+    REFERENCES grado_estudios (id_grado)
+    ON DELETE CASCADE ON UPDATE CASCADE
+    );
+CREATE TABLE carrera (
+    cod_carrera INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(10) NOT NULL,
+    descripcion VARCHAR(100) NOT NULL
+    );
+CREATE TABLE area (
+    cod_area INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(30) NOT NULL
+    );
+CREATE TABLE materia (
+    cod_materia INT AUTO_INCREMENT PRIMARY KEY,
+    cod_carrera INT NOT NULL,
+    cod_area INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(150) NOT NULL,
+    creditos INT NOT NULL,
+    bloque INT NOT NULL,
+    CONSTRAINT fk_cod_carrera FOREIGN KEY (cod_carrera)
+    REFERENCES carrera (cod_carrera)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_cod_area FOREIGN KEY (cod_area)
+    REFERENCES area (cod_area)
+    ON DELETE CASCADE ON UPDATE CASCADE
+    );
+CREATE TABLE periodo (
+    cod_periodo INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(40) NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL
+    );
+CREATE TABLE oferta (
+    nrc INT PRIMARY KEY,
+    cod_materia INT NOT NULL,
+    cod_periodo INT NOT NULL,
+    num_personal INT UNSIGNED NOT NULL,
+    CONSTRAINT fk_cod_materia FOREIGN KEY (cod_materia)
+    REFERENCES materia (cod_materia)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_cod_periodo FOREIGN KEY (cod_periodo)
+    REFERENCES periodo (cod_periodo)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_num_personal FOREIGN KEY (num_personal)
+    REFERENCES profesor (num_personal)
+    ON DELETE CASCADE ON UPDATE CASCADE
+    );
+
+CREATE TABLE carga_academica (
+    matricula VARCHAR(10),
+    nrc INT,
+    PRIMARY KEY (matricula, nrc),
+    calificacion FLOAT NOT NULL,
+    CONSTRAINT fk_matricula FOREIGN KEY (matricula)
+    REFERENCES alumno (matricula)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_nrc FOREIGN KEY (nrc)
+    REFERENCES oferta (nrc)
+    ON DELETE CASCADE ON UPDATE CASCADE
+    );
+
